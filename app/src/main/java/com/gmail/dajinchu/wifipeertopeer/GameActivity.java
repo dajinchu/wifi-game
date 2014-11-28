@@ -24,8 +24,9 @@ import java.net.Socket;
 public abstract class GameActivity extends Activity{
 
     static final int SHIP_NUM = 20;
-    static final double ACCELERATION = 1;//Switch system to per second
-    static final double TERMINAL_VELOCITY = 1;
+    static final int STAR_RADIUS = 5;
+    static final double ACCELERATION = .01;//Switch system to per second
+    static final double TERMINAL_VELOCITY = .05;
     static final int FRAMERATE = 20;
 
     String TAG = "GameActivity";
@@ -67,6 +68,7 @@ public abstract class GameActivity extends Activity{
     }
 
     public void onStartGame(){
+        Log.i(TAG, "onStartGame called");
         sendInitMatchData();//For client, nothing, for Server, send match data
         Thread t = new Thread() {
 
@@ -154,10 +156,11 @@ public abstract class GameActivity extends Activity{
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                    writer.writeUTF(tag);
+                writer.writeUTF(tag);
                 for(Serializable object : objects){
                     writer.writeObject(object);
                 }
+                writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }return null;
