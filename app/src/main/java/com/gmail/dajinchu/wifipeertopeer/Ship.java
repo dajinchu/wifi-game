@@ -23,6 +23,10 @@ public class Ship implements Serializable{
         double deltax = my_owner.destx - x;
         double deltay = my_owner.desty - y;
         double dist = Math.sqrt(Math.pow(deltay,2)+Math.pow(deltax,2));
+        if(dist<GameActivity.STAR_RADIUS){
+            xVel = yVel = 0;
+            return;
+        }
         double travelRatio = GameActivity.ACCELERATION/dist;
         if(Math.sqrt(Math.pow(deltay*travelRatio,2)+Math.pow(deltax*travelRatio,2))<GameActivity.TERMINAL_VELOCITY){
             xVel+=deltax*travelRatio;

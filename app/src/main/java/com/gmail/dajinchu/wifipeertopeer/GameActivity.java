@@ -25,7 +25,7 @@ import java.util.Random;
 public abstract class GameActivity extends Activity{
 
     static final int SHIP_NUM = 20;
-    static final int STAR_RADIUS = 5;
+    static final int STAR_RADIUS = 10;
     static final double ACCELERATION = .01;//Switch system to per second
     static final double TERMINAL_VELOCITY = .05;
     static final int FRAMERATE = 20;
