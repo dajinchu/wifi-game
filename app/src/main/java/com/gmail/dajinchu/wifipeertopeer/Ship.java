@@ -27,11 +27,9 @@ public class Ship implements Serializable{
             xVel = yVel = 0;
             return;
         }
-        double travelRatio = GameActivity.ACCELERATION/dist;
-        if(Math.sqrt(Math.pow(deltay*travelRatio,2)+Math.pow(deltax*travelRatio,2))<GameActivity.TERMINAL_VELOCITY){
-            xVel+=deltax*travelRatio;
-            yVel+=deltay*travelRatio;
-        }
+        double travelRatio = GameActivity.SPEED/dist;
+        xVel=deltax*travelRatio;
+        yVel=deltay*travelRatio;
         x += xVel;
         y += yVel;
     }
