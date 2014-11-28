@@ -33,7 +33,7 @@ public class Player implements Serializable {
             canvas.drawCircle((int)ship.x,(int)ship.y,5,mPaint);
         }
         mPaint.setColor(Color.BLACK);
-        canvas.drawCircle(destx,desty,3,mPaint);
+        canvas.drawCircle(destx,desty,GameActivity.STAR_RADIUS,mPaint);
     }
     public void frame(){
         for(Ship ship : my_ships){
@@ -45,6 +45,6 @@ public class Player implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {
         in.defaultReadObject();
         mPaint = new Paint();
-        Log.i("Player", "readObject");
+        Log.i("Player", "Getting de-serialized!");
     }
 }

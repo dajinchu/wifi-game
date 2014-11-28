@@ -34,7 +34,7 @@ public class Client extends GameActivity{
 
     @Override
     public void sendInitMatchData() {
-        return;
+        Log.i("CLient", "Ready to start(sendInitMatchData has been called from sendStartGame");
     }
 
     @Override

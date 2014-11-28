@@ -46,6 +46,7 @@ public class Server extends GameActivity{
         }
     }
 
+    @Override
     public void sendInitMatchData(){
         me = new Player(0);
         enemy = new Player(1);
