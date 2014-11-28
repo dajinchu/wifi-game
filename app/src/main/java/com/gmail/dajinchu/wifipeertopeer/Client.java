@@ -39,8 +39,6 @@ public class Client extends GameActivity{
 
     @Override
     public void onConnectionComplete() {
-        sendStartCmd();
-        onStartGame();
     }
 
     class ASyncConnect extends AsyncTask<Void,Void,Void> {

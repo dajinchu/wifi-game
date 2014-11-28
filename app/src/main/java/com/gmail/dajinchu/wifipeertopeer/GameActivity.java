@@ -17,6 +17,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.Random;
 
 /**
  * Created by Da-Jin on 11/19/2014.
@@ -41,10 +42,13 @@ public abstract class GameActivity extends Activity{
     //TODO chang ClientSend and ServerReceive names.
 
     public final static String START = "SG";
+    public final static String RANDOM_SEED = "RS";
     public final static String DATA_FULL = "DATA";
     public final static String CLICKCOORD = "CLICK";
+    public final static String PLAYER_NUM = "PNUM";
 
-    Player enemy, me;
+    Player[] players;
+    Player me;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -59,12 +63,27 @@ public abstract class GameActivity extends Activity{
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     moveDot((int)event.getX(),(int)event.getY());
-                    sendDestination((int)event.getX(), (int)event.getY());
+                    sendDestination(me.playerNumber,(int)event.getX(), (int)event.getY());
                     //TODO get rid off? sendText(String.valueOf((int) event.getX()) + "x" + String.valueOf((int) event.getY()));
                 }
                 return true;
             }
         });
+    }
+
+    public void initWithSeed(long randomSeed){
+        players = new Player[2];//TODO TEMP, have send of num of playas
+        players[0] = new Player(0);
+        players[1] = new Player(1);
+        Random random = new Random(randomSeed);
+        int x,y;
+        for(Player player : players){
+            for(int i=0; i<SHIP_NUM; i++){
+                x=random.nextInt(GameView.WIDTH);
+                y=random.nextInt(GameView.HEIGHT);
+                player.my_ships.add(new Ship(x,y,player));
+            }
+        }
     }
 
     public void onStartGame(){
@@ -185,15 +204,21 @@ public abstract class GameActivity extends Activity{
                     if ((tag = readStream.readUTF()) != null) {
                         Log.i("Receive",tag+" was received");
                         if (tag.equals(DATA_FULL)) {
-                            me = (Player) readStream.readObject();
-                            enemy = (Player) readStream.readObject();
+                            players = (Player[])readStream.readObject();
                         }
                         if (tag.equals(CLICKCOORD)) {
-                            enemy.destx = (Integer)readStream.readObject();
-                            enemy.desty = (Integer)readStream.readObject();
+                            int playernum = (Integer)readStream.readObject();
+                            players[playernum].destx = (Integer)readStream.readObject();
+                            players[playernum].desty = (Integer)readStream.readObject();
                         }
                         if (tag.equals(START)) {
                             onStartGame();
+                        }
+                        if(tag.equals(RANDOM_SEED)){
+                            initWithSeed((Long)readStream.readObject());
+                        }
+                        if(tag.equals(PLAYER_NUM)){
+                            me = players[(Integer)readStream.readObject()];
                         }
                     }
                 } catch (IOException e) {
@@ -210,16 +235,24 @@ public abstract class GameActivity extends Activity{
         new ClientSend(send, tag, objects).execute();
     }
 
-    public void sendAllData(Player me, Player enemy){
+    public void sendAllData(Player[] p){
         Log.i(TAG, "Sending all data");
-        sendObject(DATA_FULL, enemy, me);
+        sendObject(DATA_FULL, p);
     }
     public void sendStartCmd(){
         Log.i(TAG, "Sending start");
         sendObject(START);
     }
-    public void sendDestination(int destx, int desty){
+    public void sendDestination(int playernum, int destx, int desty){
         Log.i(TAG, "Sending destination");
-        sendObject(CLICKCOORD, destx,desty);
+        sendObject(CLICKCOORD, playernum, destx,desty);
+    }
+    public void sendSeed(long seed){
+        Log.i(TAG, "Sending seed for Random");
+        sendObject(RANDOM_SEED, seed);
+    }
+    public void sendPlayerNum(int num){
+        Log.i(TAG, "Sending player number");
+        sendObject(PLAYER_NUM, num);
     }
 }

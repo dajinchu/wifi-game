@@ -41,7 +41,6 @@ public class Player implements Serializable {
         }
     }
 
-
     private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {
         in.defaultReadObject();
         mPaint = new Paint();

@@ -38,9 +38,10 @@ public class GameView extends View {
     }
 
     public void frame(){
-        if(activity.enemy != null) {
-            activity.enemy.frame();
-            activity.me.frame();
+        if(activity.players!=null){//TODO is this necessary?
+            for(Player player : activity.players){
+                player.frame();
+            }
         }
         invalidate();
     }
@@ -48,9 +49,10 @@ public class GameView extends View {
     @Override
     public void onDraw(Canvas canvas){
         super.onDraw(canvas);
-        if(activity.enemy != null){
-            activity.enemy.drawShips(canvas);
-            activity.me.drawShips(canvas);
+        if(activity.players!=null){
+            for(Player player : activity.players){
+                player.drawShips(canvas);
+            }
         }
     }
 }
