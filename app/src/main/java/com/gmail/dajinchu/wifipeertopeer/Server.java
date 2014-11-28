@@ -47,21 +47,27 @@ public class Server extends GameActivity{
     }
 
     public void sendInitMatchData(){
-        StringBuilder sb = new StringBuilder();
+        me = new Player(0);
+        enemy = new Player(1);
         Random random = new Random();
         int x,y;
         for(int i=0; i<SHIP_NUM; i++){
             x=random.nextInt(GameView.WIDTH);
             y=random.nextInt(GameView.HEIGHT);
-            gameView.ships.add(new Ship(x,y, me));
-            sb.append(x);
-            sb.append(",");
-            sb.append(y);
-            sb.append(" ");
+            me.my_ships.add(new Ship(x,y,me));
         }
-        sb.setLength(sb.length() - 1);
-        Log.d(TAG, sb.toString());
-        sendText(sb.toString(), GameActivity.DATA_FULL);
+        for(int i=0; i<SHIP_NUM; i++){
+            x=random.nextInt(GameView.WIDTH);
+            y=random.nextInt(GameView.HEIGHT);
+            enemy.my_ships.add(new Ship(x,y,enemy));
+        }
+        Log.i(TAG, me.my_ships.size()+ "ships");
+        sendAllData(me,enemy);
+    }
+
+    @Override
+    public void onConnectionComplete() {
+        sendInitMatchData();
     }
 
     class ServerSend{

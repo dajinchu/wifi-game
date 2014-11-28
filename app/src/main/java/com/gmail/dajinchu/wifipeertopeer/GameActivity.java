@@ -10,12 +10,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.Socket;
 
 /**
@@ -36,12 +36,12 @@ public abstract class GameActivity extends Activity{
     Handler handler = new Handler();
 
     Socket client;//One end of communication socket. Server has its own ServerSocket
-    PrintWriter send;//PrintWriter to send info
+    ObjectOutputStream send;//PrintWriter to send info
     //TODO chang ClientSend and ServerReceive names.
 
     public final static String START = "SG";
     public final static String DATA_FULL = "DATA";
-
+    public final static String CLICKCOORD = "CLICK";
 
     Player enemy, me;
     @Override
@@ -58,70 +58,68 @@ public abstract class GameActivity extends Activity{
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     moveDot((int)event.getX(),(int)event.getY());
-                    sendText(String.valueOf((int) event.getX()) + "x" + String.valueOf((int) event.getY()));
+                    sendDestination((int)event.getX(), (int)event.getY());
+                    //TODO get rid off? sendText(String.valueOf((int) event.getX()) + "x" + String.valueOf((int) event.getY()));
                 }
                 return true;
             }
         });
     }
 
-    public abstract void sendInitMatchData();
+    public void onStartGame(){
+        sendInitMatchData();//For client, nothing, for Server, send match data
+        Thread t = new Thread() {
 
-    public void parseFullData(String message){
-        Log.i(TAG, "parsing full data");
-        String[] shipcoords = message.split(" ");//Coords of ships
-        String[] coords = new String[2];
-
-        for(String str : shipcoords){
-            coords = str.split(",");
-            gameView.ships.add(new Ship(Integer.parseInt(coords[0]),Integer.parseInt(coords[1]),me));
-        }
-    }
-    public void parseMessage(String message){
-        displayText(message);
-        if(message.equals(START)){//TODO just make a start function that CAN be overridden by server
-            sendInitMatchData();//For client, nothing, for Server, send match data
-            Thread t = new Thread() {
-
-                @Override
-                public void run() {
-                    try {
-                        while (!isInterrupted()) {
-                            Thread.sleep(FRAMERATE);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameView.frame();
-                                }
-                            });
-                        }
-                    } catch (InterruptedException e) {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(FRAMERATE);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameView.frame();
+                            }
+                        });
                     }
+                } catch (InterruptedException e) {
                 }
-            };
+            }
+        };
+        t.start();
+    }
+    public abstract void sendInitMatchData();
+    public abstract void onConnectionComplete();
 
-            t.start();
-            return;
+    //TODO Move stuff to networking, Server/Client
+    private class StartSendReceive extends AsyncTask<Void,Void,Void>{
+        protected Void doInBackground(Void... Voids) {
+            try {
+                Log.i(TAG, "Getting streams");
+                OutputStream oStream = client.getOutputStream();
+                send = new ObjectOutputStream(oStream);
+                //sendText("30x40");
+                System.out.println(send);
+
+                InputStream istream = client.getInputStream();
+                ObjectInputStream read = new ObjectInputStream(istream);
+                new Thread(new ServerReceive(read)).start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
         }
-        String[] coords = message.split("x");
-        moveDot(Integer.parseInt(coords[0]),Integer.parseInt(coords[1]));
+        @Override
+        protected void onPostExecute(Void v) {
+            onConnectionComplete();
+        }
 
     }
 
     public void startSendReceive(){
-        try {
-            Log.i(TAG, "Getting streams");
-            OutputStream oStream = client.getOutputStream();
-            send = new PrintWriter(oStream, true);
-            //sendText("30x40");
-
-            InputStream istream = client.getInputStream();
-            BufferedReader read = new BufferedReader(new InputStreamReader(istream));
-            new Thread(new ServerReceive(read)).start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        new StartSendReceive().execute();
     }
+
     public void displayText(final String text){
         handler.post(new Runnable(){
             @Override
@@ -141,68 +139,84 @@ public abstract class GameActivity extends Activity{
             }
         });
     }
-    class ClientSend extends AsyncTask<String,Void,Void> {
+    class ClientSend extends AsyncTask<Void,Void,Void> {
 
-        PrintWriter writer;
+        ObjectOutputStream writer;
+        Serializable[] objects;
+        String tag;
 
-        public ClientSend(PrintWriter writer){
+        public ClientSend(ObjectOutputStream writer, String tag, Serializable... objects){
             this.writer = writer;
+            this.objects = objects;
+            this.tag = tag;
         }
 
-
         @Override
-        protected Void doInBackground(String... write) {
-            Log.i("CLient","Indeed, CLientSend thread has noticed and is now sending "+write[0]);
-            writer.println(MainActivity.START_MSG);
-            writer.println(write[0]);//TODO replace with asyncTask! this while loop will go round and eat CPU, also there is already handler read in GameActivity
-            writer.println(write[1]);
-            return null;
+        protected Void doInBackground(Void... voids) {
+            try {
+                    writer.writeUTF(tag);
+                for(Serializable object : objects){
+                    writer.writeObject(object);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }return null;
         }
 
     }
     class ServerReceive implements Runnable {
-        BufferedReader readStream;
+        ObjectInputStream readStream;
         TextView data;
 
-        public ServerReceive(BufferedReader stream) {
+        public ServerReceive(ObjectInputStream stream) {
             readStream = stream;
             this.data = data;
         }
 
         @Override
         public void run() {
-            StringBuilder sb = new StringBuilder();
-            String line;
+            String tag;
+            Log.i("Receive","Listening stuff");
             while(true) {
                 try {
-                    if ((line = readStream.readLine()) != null) {
-                        Log.i(TAG, line+" was received");
-                        if (line.equals(MainActivity.START_MSG)) {
-                            Log.i(TAG, "StartMSG tag FOUND");
-                            sb = new StringBuilder();
-                        } else if(line.equals(GameActivity.DATA_FULL)){
-                            Log.i(TAG, sb.toString()+" going to parseFullData");
-                            parseFullData(sb.toString());
-                            sb.delete(0,sb.length());
-                        } else if (line.equals(MainActivity.END_MSG)) {
-                            parseMessage(sb.toString());
-                            sb.delete(0, sb.length());//TODO is this neccesary? idk
-                        } else {
-                            sb.append(line);
+                    if ((tag = readStream.readUTF()) != null) {
+                        Log.i("Receive",tag+" was received");
+                        if (tag.equals(DATA_FULL)) {
+                            me = (Player) readStream.readObject();
+                            enemy = (Player) readStream.readObject();
+                        }
+                        if (tag.equals(CLICKCOORD)) {
+                            enemy.destx = readStream.readInt();
+                            enemy.desty = readStream.readInt();
+                        }
+                        if (tag.equals(START)) {
+                            onStartGame();
                         }
                     }
                 } catch (IOException e) {
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
 
-    public void sendText(String text){
-        sendText(text, MainActivity.END_MSG);
-    }
-    public void sendText(String text, String TAG) {
 
-        Log.i("CLient", "telling Async to write");
-        new ClientSend(send).execute(text, TAG);
+    private void sendObject(String tag, Serializable... objects){
+        System.out.println(send);
+        new ClientSend(send, tag, objects).execute();
+    }
+
+    public void sendAllData(Player me, Player enemy){
+        Log.i(TAG, "Sending all data");
+        sendObject(DATA_FULL, enemy, me);
+    }
+    public void sendStartCmd(){
+        Log.i(TAG, "Sending start");
+        sendObject(START);
+    }
+    public void sendDestination(int destx, int desty){
+        Log.i(TAG, "Sending destination");
+        sendObject(CLICKCOORD, destx,desty);
     }
 }

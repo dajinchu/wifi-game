@@ -1,9 +1,11 @@
 package com.gmail.dajinchu.wifipeertopeer;
 
+import java.io.Serializable;
+
 /**
  * Created by Da-Jin on 11/25/2014.
  */
-public class Ship {
+public class Ship implements Serializable{
     double x, y, xVel=0,yVel=0;
     //int destx, desty;//Eventually give this back to give player control over individual ships
     //int color;

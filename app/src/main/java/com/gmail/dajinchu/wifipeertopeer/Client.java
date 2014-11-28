@@ -37,6 +37,12 @@ public class Client extends GameActivity{
         return;
     }
 
+    @Override
+    public void onConnectionComplete() {
+        sendStartCmd();
+        onStartGame();
+    }
+
     class ASyncConnect extends AsyncTask<Void,Void,Void> {
 
         String host;
@@ -65,8 +71,6 @@ public class Client extends GameActivity{
         @Override
         protected void onPostExecute(Void v) {
             startSendReceive();
-            sendText(START);
-            parseMessage(START);
         }
     }
 
