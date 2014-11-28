@@ -186,8 +186,8 @@ public abstract class GameActivity extends Activity{
                             enemy = (Player) readStream.readObject();
                         }
                         if (tag.equals(CLICKCOORD)) {
-                            enemy.destx = readStream.readInt();
-                            enemy.desty = readStream.readInt();
+                            enemy.destx = (Integer)readStream.readObject();
+                            enemy.desty = (Integer)readStream.readObject();
                         }
                         if (tag.equals(START)) {
                             onStartGame();
