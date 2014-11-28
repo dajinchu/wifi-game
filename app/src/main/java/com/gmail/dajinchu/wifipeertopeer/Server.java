@@ -68,7 +68,7 @@ public class Server extends GameActivity{
 
     @Override
     public void onConnectionComplete() {
-        sendInitMatchData();
+        //sendInitMatchData();
     }
 
     class ServerSend{
