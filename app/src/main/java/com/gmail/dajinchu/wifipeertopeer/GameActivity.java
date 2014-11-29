@@ -25,7 +25,8 @@ import java.util.Random;
 public abstract class GameActivity extends Activity{
 
     static final int SHIP_NUM = 20;
-    static final int STAR_RADIUS = 10;
+    static final int DEST_RADIUS = 20;
+    static final int ENGAGEMENT_RANGE = 1;
     static final double SPEED = .5;//Switch system to per second
     static final int FRAMERATE = 20;
 
@@ -80,7 +81,7 @@ public abstract class GameActivity extends Activity{
             for(int i=0; i<SHIP_NUM; i++){
                 x=random.nextInt(GameView.WIDTH);
                 y=random.nextInt(GameView.HEIGHT);
-                player.my_ships.add(new Ship(x,y,player));
+                player.my_ships.add(new Ship(x,y,player, this));
             }
         }
     }
