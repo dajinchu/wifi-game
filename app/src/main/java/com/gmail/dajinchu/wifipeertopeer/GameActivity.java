@@ -2,6 +2,7 @@ package com.gmail.dajinchu.wifipeertopeer;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -25,7 +27,7 @@ import java.util.Random;
 public abstract class GameActivity extends Activity{
 
     static final int SHIP_NUM = 20;
-    static final int DEST_RADIUS = 20;
+    static final int DEST_RADIUS = 200;
     static final int ENGAGEMENT_RANGE = 1;
     static final double SPEED = .5;//Switch system to per second
     static final int FRAMERATE = 20;
@@ -52,6 +54,8 @@ public abstract class GameActivity extends Activity{
 
     public Random random;
 
+
+    ArrayList<Point> tests = new ArrayList<Point>();
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -72,6 +76,22 @@ public abstract class GameActivity extends Activity{
                 return true;
             }
         });
+
+        //Testing circle distribution 
+        //Copied from Stack Overflow: http://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
+        Random ra = new Random();
+        int x = 400, y = 400;
+        for(int i = 0; i < 1000; i++){
+            double t = 2*Math.PI*ra.nextDouble();
+            double u = ra.nextDouble()+ra.nextDouble();
+            double r;
+            if(u>1){
+                r = 2-u;
+            } else {
+                r=u;
+            }
+            tests.add(new Point((int) (r*Math.cos(t)*GameActivity.DEST_RADIUS+x),(int)(r*Math.sin(t)*GameActivity.DEST_RADIUS+y)));
+        }
     }
 
     public void initWithSeed(long randomSeed){
