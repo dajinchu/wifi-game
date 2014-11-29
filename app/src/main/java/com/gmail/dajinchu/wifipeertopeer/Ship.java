@@ -37,11 +37,17 @@ public class Ship implements Serializable{
             wanderArrived = true;//Arrived is false, that means player changed dest, set wander to true to trigger upon arrival
         }
         if(wanderArrived&&arrived){
-            wanderdestx = (int) (activity.random.nextDouble()*2-1);//Random -1 through 1
-            maxy = Math.sqrt(1-wanderdestx*wanderdestx);
-            wanderdesty = (int) (activity.random.nextDouble()*maxy*2-maxy);
-            wanderdestx= (int) (wanderdestx*GameActivity.DEST_RADIUS+x);
-            wanderdesty= (int) (wanderdesty*GameActivity.DEST_RADIUS+y);
+            //Copied from Stack Overflow: http://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
+            double t = 2*Math.PI*activity.random.nextDouble();
+            double u = activity.random.nextDouble()+activity.random.nextDouble();
+            double r;
+            if(u>1){
+                r = 2-u;
+            } else {
+                r=u;
+            }
+            wanderdestx = (int) (r*Math.cos(t)*GameActivity.DEST_RADIUS+x);
+            wanderdesty = (int) (r*Math.sin(t)*GameActivity.DEST_RADIUS+y);
             Log.i("SHip", "wandering to " + wanderdestx + "," + wanderdesty);
 
         }

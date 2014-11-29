@@ -2,7 +2,9 @@ package com.gmail.dajinchu.wifipeertopeer;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -35,6 +37,7 @@ public class GameView extends View {
 
     public void init(){
         activity = (GameActivity) getContext();
+        mPaint.setColor(Color.BLUE);
     }
 
     public void frame(){
@@ -53,6 +56,9 @@ public class GameView extends View {
             for(Player player : activity.players){
                 player.drawShips(canvas);
             }
+        }
+        for(Point point : activity.tests){
+            canvas.drawCircle(point.x,point.y,1,mPaint);
         }
     }
 }
