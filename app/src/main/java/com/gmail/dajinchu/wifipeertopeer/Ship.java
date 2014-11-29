@@ -26,40 +26,7 @@ public class Ship implements Serializable{
 
 
     public void frame(){
-        double deltax = my_owner.destx - x;
-        double deltay = my_owner.desty - y;
-        double dist = Math.sqrt(Math.pow(deltay,2)+Math.pow(deltax,2));
-        double clipped_speed;
-        //double travelRatio = GameActivity.ACCEL/dist;
-        double xyVelocity = Math.sqrt(xVel*xVel+yVel*yVel);
-        //if(xyVelocity<GameActivity.TERMINAL_VELOCITY){
-            //Accelerate only if we are moving slower than terminal velocity
-            if(dist<GameActivity.DEST_RADIUS*2){
-                //Arrived near destination, DECELERATE
-                //Using Vf^2 = Vi^2 + 2*a*d
-                //Algebra: (Vf^2-Vi^2)/2d = a
-                /*double xaccel = (0-(xVel*xVel))/(2*deltax);
-                double yaccel = (0-(yVel*yVel))/(2*deltay);
-                xVel+=deltax*xaccel/dist;
-                yVel+=deltay*yaccel/dist;
-                Log.i("Ship", xaccel + " "+ xVel);
-            */
-
-                //Closer we get, slower we get, its a proportion
-                clipped_speed = GameActivity.TERMINAL_VELOCITY * (dist /(GameActivity.DEST_RADIUS*2));
-
-
-                }else{
-                clipped_speed = GameActivity.TERMINAL_VELOCITY;
-                //Not in dest, ACCELERATE as usual
-            }
-        //}
-
-        double travelRatio = (clipped_speed-xyVelocity)/dist;
-        xVel+=deltax*travelRatio;
-        yVel+=deltay*travelRatio;
-        x += xVel;
-        y += yVel;
+        arrive();
         Ship target = getTarget();
         if(target != null){
             target.my_owner.remove_ships.add(target);//TODO maybbe just iterate through a clone and remove from real?
