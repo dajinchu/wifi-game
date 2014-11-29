@@ -30,12 +30,12 @@ public class Player implements Serializable {
         color = colorMap[playerNumber];
     }
     public void drawShips(Canvas canvas){
+        mPaint.setColor(Color.BLACK);
+        canvas.drawCircle(destx,desty,GameActivity.DEST_RADIUS,mPaint);
         mPaint.setColor(color);
         for(Ship ship : my_ships){
             canvas.drawCircle((int)ship.x,(int)ship.y,5,mPaint);
         }
-        mPaint.setColor(Color.BLACK);
-        canvas.drawCircle(destx,desty,GameActivity.DEST_RADIUS,mPaint);
     }
     public void frame(){
         for(Ship ship : my_ships){

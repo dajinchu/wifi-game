@@ -1,5 +1,7 @@
 package com.gmail.dajinchu.wifipeertopeer;
 
+import android.util.Log;
+
 import java.io.Serializable;
 
 /**
@@ -7,7 +9,8 @@ import java.io.Serializable;
  */
 public class Ship implements Serializable{
     double x, y, xVel=0,yVel=0;
-    //int destx, desty;//Eventually give this back to give player control over individual ships
+    boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
+    int wanderdestx, wanderdesty;//Eventually give this back to give player control over individual ships
     //int color;
 
     //Temp stuff, local variables here to save memory
@@ -28,10 +31,26 @@ public class Ship implements Serializable{
         double deltax = my_owner.destx - x;
         double deltay = my_owner.desty - y;
         double dist = Math.sqrt(Math.pow(deltay,2)+Math.pow(deltax,2));
-        if(dist<GameActivity.DEST_RADIUS){
+        if(arrived=(dist<GameActivity.DEST_RADIUS)){
             xVel = yVel = 0;
-            return;
+        }else{
+            wanderArrived = true;//Arrived is false, that means player changed dest, set wander to true to trigger upon arrival
         }
+        if(wanderArrived&&arrived){
+            wanderdestx = (int) (activity.random.nextDouble()*2-1);//Random -1 through 1
+            maxy = Math.sqrt(1-wanderdestx*wanderdestx);
+            wanderdesty = (int) (activity.random.nextDouble()*maxy*2-maxy);
+            wanderdestx= (int) (wanderdestx*GameActivity.DEST_RADIUS+x);
+            wanderdesty= (int) (wanderdesty*GameActivity.DEST_RADIUS+y);
+            Log.i("SHip", "wandering to " + wanderdestx + "," + wanderdesty);
+
+        }
+        if(arrived){//After wanderArrived assigned
+            deltax = wanderdestx-x;
+            deltay = wanderdesty-y;
+            wanderArrived = (Math.sqrt(Math.pow(deltay,2)+Math.pow(deltax,2))<=1);
+        }
+
         double travelRatio = GameActivity.SPEED/dist;
         xVel=deltax*travelRatio;
         yVel=deltay*travelRatio;

@@ -49,6 +49,9 @@ public abstract class GameActivity extends Activity{
 
     Player[] players;
     Player me;
+
+    public Random random;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -75,7 +78,7 @@ public abstract class GameActivity extends Activity{
         players = new Player[2];//TODO TEMP, have send of num of playas
         players[0] = new Player(0);
         players[1] = new Player(1);
-        Random random = new Random(randomSeed);
+        random = new Random(randomSeed);
         int x,y;
         for(Player player : players){
             for(int i=0; i<SHIP_NUM; i++){
