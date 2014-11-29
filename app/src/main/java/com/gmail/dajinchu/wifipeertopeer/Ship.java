@@ -31,12 +31,13 @@ public class Ship implements Serializable{
         double deltax = my_owner.destx - x;
         double deltay = my_owner.desty - y;
         double dist = Math.sqrt(Math.pow(deltay,2)+Math.pow(deltax,2));
+        double travelRatio = GameActivity.SPEED/dist;
         if(arrived=(dist<GameActivity.DEST_RADIUS)){
             xVel = yVel = 0;
         }else{
             wanderArrived = true;//Arrived is false, that means player changed dest, set wander to true to trigger upon arrival
         }
-        if(wanderArrived&&arrived){
+        if(wanderArrived&&arrived){//Arrived, and need new wander point
             //Copied from Stack Overflow: http://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
             double t = 2*Math.PI*activity.random.nextDouble();
             double u = activity.random.nextDouble()+activity.random.nextDouble();
@@ -51,13 +52,14 @@ public class Ship implements Serializable{
             Log.i("SHip", "wandering to " + wanderdestx + "," + wanderdesty);
 
         }
-        if(arrived){//After wanderArrived assigned
+        if(arrived){//After wanderArrived assigned, has arrived has wander point, wander towards it
             deltax = wanderdestx-x;
             deltay = wanderdesty-y;
-            wanderArrived = (Math.sqrt(Math.pow(deltay,2)+Math.pow(deltax,2))<=1);
+            dist = (Math.sqrt(Math.pow(deltay,2)+Math.pow(deltax,2)));
+            travelRatio = GameActivity.SPEED*5/dist;//Extra slow
+            wanderArrived = (dist<=1);
         }
 
-        double travelRatio = GameActivity.SPEED/dist;
         xVel=deltax*travelRatio;
         yVel=deltay*travelRatio;
         x += xVel;
