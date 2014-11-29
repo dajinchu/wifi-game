@@ -76,22 +76,6 @@ public abstract class GameActivity extends Activity{
                 return true;
             }
         });
-
-        //Testing circle distribution 
-        //Copied from Stack Overflow: http://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
-        Random ra = new Random();
-        int x = 400, y = 400;
-        for(int i = 0; i < 1000; i++){
-            double t = 2*Math.PI*ra.nextDouble();
-            double u = ra.nextDouble()+ra.nextDouble();
-            double r;
-            if(u>1){
-                r = 2-u;
-            } else {
-                r=u;
-            }
-            tests.add(new Point((int) (r*Math.cos(t)*GameActivity.DEST_RADIUS+x),(int)(r*Math.sin(t)*GameActivity.DEST_RADIUS+y)));
-        }
     }
 
     public void initWithSeed(long randomSeed){
