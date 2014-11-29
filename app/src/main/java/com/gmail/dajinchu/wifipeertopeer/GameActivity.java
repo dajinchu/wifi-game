@@ -26,10 +26,11 @@ import java.util.Random;
  */
 public abstract class GameActivity extends Activity{
 
-    static final int SHIP_NUM = 20;
-    static final int DEST_RADIUS = 200;
-    static final int ENGAGEMENT_RANGE = 1;
-    static final double SPEED = .5;//Switch system to per second
+    static final int SHIP_NUM = 1;
+    static final double DEST_RADIUS = 50;
+    static final double ENGAGEMENT_RANGE = 1;
+    static final double ACCEL = .01;//Switch system to per second
+    static final double TERMINAL_VELOCITY = .05;
     static final int FRAMERATE = 20;
 
     String TAG = "GameActivity";

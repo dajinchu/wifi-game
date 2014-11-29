@@ -17,7 +17,7 @@ public class Player implements Serializable {
     ArrayList<Ship> my_ships = new ArrayList<Ship>();//ships under this Player's control
     ArrayList<Ship> remove_ships = new ArrayList<Ship>();//ships to be removed
     int playerNumber;//For identification across devices, each number corresponds to a color
-    int destx=50,desty=50;
+    int destx=100,desty=100;
 
     //Graphics
     static int[] colorMap = new int[]{Color.BLUE, Color.RED};//number->color link
@@ -28,10 +28,11 @@ public class Player implements Serializable {
     public Player(int playerNumber){
         this.playerNumber = playerNumber;
         color = colorMap[playerNumber];
+
     }
     public void drawShips(Canvas canvas){
         mPaint.setColor(Color.BLACK);
-        canvas.drawCircle(destx,desty,GameActivity.DEST_RADIUS,mPaint);
+        canvas.drawCircle(destx,desty, (float) GameActivity.DEST_RADIUS,mPaint);
         mPaint.setColor(color);
         for(Ship ship : my_ships){
             canvas.drawCircle((int)ship.x,(int)ship.y,5,mPaint);
