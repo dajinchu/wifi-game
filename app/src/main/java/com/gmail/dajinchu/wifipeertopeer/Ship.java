@@ -55,6 +55,13 @@ public class Ship implements Serializable{
         double steeringx = desiredx-xVel;
         double steeringy = desiredy-yVel;
 
+        double steerMagnitude = Math.sqrt(steeringx*steeringx+steeringy*steeringy);
+        if(steerMagnitude>GameActivity.MAX_FORCE){
+            double ratio = GameActivity.MAX_FORCE/steerMagnitude;
+            steeringx*=ratio;
+            steeringy*=ratio;
+        }
+
         xVel += steeringx;
         yVel += steeringy;
 

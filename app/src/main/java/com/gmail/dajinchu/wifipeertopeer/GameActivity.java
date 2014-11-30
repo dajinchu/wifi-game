@@ -31,6 +31,7 @@ public abstract class GameActivity extends Activity{
     static final double ENGAGEMENT_RANGE = 1;
     static final double ACCEL = .01;//Switch system to per second
     static final double TERMINAL_VELOCITY = .05;
+    static final double MAX_FORCE = .1;
     static final int FRAMERATE = 20;
 
     String TAG = "GameActivity";
