@@ -1,5 +1,8 @@
 package com.gmail.dajinchu.wifipeertopeer;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -24,6 +27,7 @@ public class Player implements Serializable {
     final int color;//For graphics, may be replaced with Bitmap
     transient Paint mPaint = new Paint();
 
+    public static Bitmap bmp = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.ic_action_discover);
 
     public Player(int playerNumber){
         this.playerNumber = playerNumber;
@@ -35,7 +39,7 @@ public class Player implements Serializable {
         canvas.drawCircle(destx,desty, (float) GameActivity.DEST_RADIUS,mPaint);
         mPaint.setColor(color);
         for(Ship ship : my_ships){
-            canvas.drawCircle((int)ship.x,(int)ship.y,5,mPaint);
+            canvas.drawBitmap(bmp,(int)ship.x,(int)ship.y,mPaint);
         }
     }
     public void frame(){

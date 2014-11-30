@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -19,6 +18,7 @@ public class GameView extends View {
     Paint mPaint = new Paint();
 
     GameActivity activity;
+
 
     public GameView(Context context) {
         super(context);
@@ -40,25 +40,18 @@ public class GameView extends View {
         mPaint.setColor(Color.BLUE);
     }
 
-    public void frame(){
-        if(activity.players!=null){//TODO is this necessary?
-            for(Player player : activity.players){
-                player.frame();
-            }
-        }
-        invalidate();
-    }
+
 
     @Override
     public void onDraw(Canvas canvas){
+        long start = System.currentTimeMillis();
         super.onDraw(canvas);
         if(activity.players!=null){
             for(Player player : activity.players){
                 player.drawShips(canvas);
             }
         }
-        for(Point point : activity.tests){
-            canvas.drawCircle(point.x,point.y,1,mPaint);
-        }
+        activity.frames++;
+        //Log.i("DRAW BENCHMARK", ""+(System.currentTimeMillis() - start));
     }
 }

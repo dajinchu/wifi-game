@@ -16,6 +16,7 @@ public class Ship implements Serializable{
 
     Player my_owner;
     GameActivity activity;
+    private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
 
     public Ship(int x, int y, Player owner, GameActivity activity){
         this.x = x;
@@ -27,21 +28,20 @@ public class Ship implements Serializable{
 
     public void frame(){
         arrive();
-        Ship target = getTarget();
+        /*Ship target = getTarget();
         if(target != null){
             target.my_owner.remove_ships.add(target);//TODO maybbe just iterate through a clone and remove from real?
             my_owner.remove_ships.add(this);
-        }
+        }*/
     }
 
     public void arrive(){
-        double desiredx = my_owner.destx-x;
-        double desiredy = my_owner.desty-y;
+        desiredx = my_owner.destx-x;
+        desiredy = my_owner.desty-y;
 
-        double dist = Math.sqrt(Math.pow(desiredx,2)+Math.pow(desiredy,2));//Magnitude of desired
+        dist = Math.sqrt(Math.pow(desiredx,2)+Math.pow(desiredy,2));//Magnitude of desired
 
         //m is speed to multiply
-        double speed;
         if(dist<GameActivity.DEST_RADIUS){
             //Closer we get, slower we get, its a proportion
             speed = GameActivity.TERMINAL_VELOCITY * (dist /GameActivity.DEST_RADIUS);
@@ -52,12 +52,12 @@ public class Ship implements Serializable{
         desiredx*=speed;
         desiredy*=speed;
 
-        double steeringx = desiredx-xVel;
-        double steeringy = desiredy-yVel;
+        steeringx = desiredx-xVel;
+        steeringy = desiredy-yVel;
 
-        double steerMagnitude = Math.sqrt(steeringx*steeringx+steeringy*steeringy);
+        steerMagnitude = Math.sqrt(steeringx*steeringx+steeringy*steeringy);
         if(steerMagnitude>GameActivity.MAX_FORCE){
-            double ratio = GameActivity.MAX_FORCE/steerMagnitude;
+            ratio = GameActivity.MAX_FORCE/steerMagnitude;
             steeringx*=ratio;
             steeringy*=ratio;
         }

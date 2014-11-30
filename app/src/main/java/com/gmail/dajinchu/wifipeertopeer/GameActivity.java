@@ -1,14 +1,19 @@
 package com.gmail.dajinchu.wifipeertopeer;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -26,13 +31,13 @@ import java.util.Random;
  */
 public abstract class GameActivity extends Activity{
 
-    static final int SHIP_NUM = 1;
+    static final int SHIP_NUM = 450;
     static final double DEST_RADIUS = 50;
-    static final double ENGAGEMENT_RANGE = 1;
+    static final double ENGAGEMENT_RANGE = 2;
     static final double ACCEL = .01;//Switch system to per second
     static final double TERMINAL_VELOCITY = .05;
     static final double MAX_FORCE = .1;
-    static final int FRAMERATE = 20;
+    static final long FRAMERATE = 20;
 
     String TAG = "GameActivity";
 
@@ -56,6 +61,7 @@ public abstract class GameActivity extends Activity{
 
     public Random random;
 
+    long frames = 0;
 
     ArrayList<Point> tests = new ArrayList<Point>();
     @Override
@@ -78,6 +84,9 @@ public abstract class GameActivity extends Activity{
                 return true;
             }
         });
+        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int refreshRate = (int) display.getRefreshRate();
+        Log.i(TAG,refreshRate +"REFRESHRATE");
     }
 
     public void initWithSeed(long randomSeed){
@@ -98,25 +107,53 @@ public abstract class GameActivity extends Activity{
     public void onStartGame(){
         Log.i(TAG, "onStartGame called");
         sendInitMatchData();//For client, nothing, for Server, send match data
-        Thread t = new Thread() {
+        Player.bmp = BitmapFactory.decodeResource(getResources(),R.drawable.icon);
+        final long start = SystemClock.uptimeMillis();
+        Thread t = new Thread(new Runnable() {
 
             @Override
             public void run() {
+                while(true){
+                    try {
+                        Thread.sleep((long) (1000/FRAMERATE));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(players!=null){//TODO is this necessary?
+                        for(Player player : players){
+                            player.frame();
+                        }
+                    }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            gameView.invalidate();
+                        }
+                    });
+                    //Log.i(TAG, frames+" "+(frames/((SystemClock.uptimeMillis()-start)/1000.0)));
+                }
+                /*
                 try {
                     while (!isInterrupted()) {
-                        Thread.sleep(FRAMERATE);
+                        Thread.sleep(1/FRAMERATE);
+
+                        long start = System.currentTimeMillis();
+
+                        Log.i("ship calc BENCHMARK", ""+(System.currentTimeMillis() - start));
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                gameView.frame();
+                                Log.i(TAG, "FRAME MARKER HERE");
                             }
                         });
                     }
                 } catch (InterruptedException e) {
-                }
+                }*/
             }
-        };
+        });
         t.start();
+
     }
     public abstract void sendInitMatchData();
     public abstract void onConnectionComplete();
