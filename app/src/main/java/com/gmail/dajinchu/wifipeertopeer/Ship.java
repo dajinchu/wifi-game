@@ -44,7 +44,7 @@ public class Ship implements Serializable{
         double speed;
         if(dist<GameActivity.DEST_RADIUS){
             //Closer we get, slower we get, its a proportion
-            speed = GameActivity.TERMINAL_VELOCITY * (dist /(GameActivity.DEST_RADIUS*2));
+            speed = GameActivity.TERMINAL_VELOCITY * (dist /GameActivity.DEST_RADIUS);
         } else{
             speed = GameActivity.TERMINAL_VELOCITY;
         }
