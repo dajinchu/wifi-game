@@ -89,6 +89,19 @@ public abstract class GameActivity extends Activity{
         Log.i(TAG,refreshRate +"REFRESHRATE");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        gameView.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        gameView.pause();
+    }
+
+
     public void initWithSeed(long randomSeed){
         players = new Player[2];//TODO TEMP, have send of num of playas
         players[0] = new Player(0);
@@ -109,7 +122,7 @@ public abstract class GameActivity extends Activity{
         sendInitMatchData();//For client, nothing, for Server, send match data
         Player.bmp = BitmapFactory.decodeResource(getResources(),R.drawable.smile);
         final long start = SystemClock.uptimeMillis();
-        Thread t = new Thread(new Runnable() {
+        /*Thread t = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -149,10 +162,10 @@ public abstract class GameActivity extends Activity{
                         });
                     }
                 } catch (InterruptedException e) {
-                }*/
+                }
             }
         });
-        t.start();
+        t.start();*/
 
     }
     public abstract void sendInitMatchData();

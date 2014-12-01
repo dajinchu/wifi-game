@@ -6,7 +6,8 @@ import java.io.Serializable;
  * Created by Da-Jin on 11/25/2014.
  */
 public class Ship implements Serializable{
-    double x, y, xVel=0,yVel=0;
+    volatile double x, y;//TODO more volatiles?
+    int xVel=0,yVel=0;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
     int wanderdestx, wanderdesty;//Eventually give this back to give player control over individual ships
     //int color;
