@@ -44,13 +44,14 @@ public class GameView extends View {
 
     @Override
     public void onDraw(Canvas canvas){
-        long start = System.currentTimeMillis();
-        super.onDraw(canvas);
+        //long start = System.currentTimeMillis();
+        //super.onDraw(canvas);
         if(activity.players!=null){
             for(Player player : activity.players){
                 player.drawShips(canvas);
             }
         }
+        //canvas.drawCircle(100,100,5,mPaint);
         activity.frames++;
         //Log.i("DRAW BENCHMARK", ""+(System.currentTimeMillis() - start));
     }

@@ -1,8 +1,6 @@
 package com.gmail.dajinchu.wifipeertopeer;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -27,7 +25,7 @@ public class Player implements Serializable {
     final int color;//For graphics, may be replaced with Bitmap
     transient Paint mPaint = new Paint();
 
-    public static Bitmap bmp = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.ic_action_discover);
+    public static Bitmap bmp;
 
     public Player(int playerNumber){
         this.playerNumber = playerNumber;

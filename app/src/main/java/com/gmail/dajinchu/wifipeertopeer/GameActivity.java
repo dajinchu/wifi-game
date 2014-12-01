@@ -37,7 +37,7 @@ public abstract class GameActivity extends Activity{
     static final double ACCEL = .01;//Switch system to per second
     static final double TERMINAL_VELOCITY = .05;
     static final double MAX_FORCE = .1;
-    static final long FRAMERATE = 20;
+    static final long FRAMERATE = 100;
 
     String TAG = "GameActivity";
 
@@ -107,7 +107,7 @@ public abstract class GameActivity extends Activity{
     public void onStartGame(){
         Log.i(TAG, "onStartGame called");
         sendInitMatchData();//For client, nothing, for Server, send match data
-        Player.bmp = BitmapFactory.decodeResource(getResources(),R.drawable.icon);
+        Player.bmp = BitmapFactory.decodeResource(getResources(),R.drawable.smile);
         final long start = SystemClock.uptimeMillis();
         Thread t = new Thread(new Runnable() {
 
@@ -130,7 +130,7 @@ public abstract class GameActivity extends Activity{
                             gameView.invalidate();
                         }
                     });
-                    //Log.i(TAG, frames+" "+(frames/((SystemClock.uptimeMillis()-start)/1000.0)));
+                    Log.i(TAG, frames+" "+(frames/((SystemClock.uptimeMillis()-start)/1000.0)));
                 }
                 /*
                 try {
