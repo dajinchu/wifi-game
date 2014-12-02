@@ -27,27 +27,32 @@ public class Player implements Serializable {
 
     public static Bitmap bmp;
 
+    String TAG = "Player";
+
     public Player(int playerNumber){
         this.playerNumber = playerNumber;
         color = colorMap[playerNumber];
+        mPaint.setColor(color);
 
     }
     public void drawShips(Canvas canvas){
-        mPaint.setColor(Color.BLACK);
-        canvas.drawCircle(destx,desty, (float) GameActivity.DEST_RADIUS,mPaint);
-        mPaint.setColor(color);
+        //mPaint.setColor(Color.BLACK);
+        //canvas.drawCircle(destx,desty, (float) GameActivity.DEST_RADIUS,mPaint);
+        //mPaint.setColor(color);
         for(Ship ship : my_ships){
+            //Log.i("PLAYER", bmp+" "+ship.x+" "+ship.y+" "+mPaint);
             canvas.drawBitmap(bmp,(int)ship.x,(int)ship.y,mPaint);
         }
     }
     public void frame(){
+        /*Log.i(TAG, my_ships.size()+"");
         for(Ship ship : my_ships){
             ship.frame();
         }
         for(Ship ship: remove_ships){
             my_ships.remove(ship);
         }
-        remove_ships.clear();
+        remove_ships.clear();*/
     }
 
     private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {

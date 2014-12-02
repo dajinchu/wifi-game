@@ -3,16 +3,12 @@ package com.gmail.dajinchu.wifipeertopeer;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -31,13 +27,13 @@ import java.util.Random;
  */
 public abstract class GameActivity extends Activity{
 
-    static final int SHIP_NUM = 450;
+    static final int SHIP_NUM = 500;
     static final double DEST_RADIUS = 50;
     static final double ENGAGEMENT_RANGE = 2;
     static final double ACCEL = .01;//Switch system to per second
-    static final double TERMINAL_VELOCITY = .05;
+    static final double TERMINAL_VELOCITY = 2;
     static final double MAX_FORCE = .1;
-    static final long FRAMERATE = 100;
+    static final long FRAMERATE = 60;
 
     String TAG = "GameActivity";
 
@@ -63,6 +59,8 @@ public abstract class GameActivity extends Activity{
 
     long frames = 0;
 
+    boolean gameStarted = false;
+
     ArrayList<Point> tests = new ArrayList<Point>();
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -72,18 +70,7 @@ public abstract class GameActivity extends Activity{
         outputText = (TextView)findViewById(R.id.output);
 
         gameView = (GameView)findViewById(R.id.game);
-        gameView.setBackgroundColor(Color.WHITE);
-        gameView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    moveDot((int)event.getX(),(int)event.getY());
-                    sendDestination(me.playerNumber,(int)event.getX(), (int)event.getY());
-                    //TODO get rid off? sendText(String.valueOf((int) event.getX()) + "x" + String.valueOf((int) event.getY()));
-                }
-                return true;
-            }
-        });
+        //gameView.setBackgroundColor(Color.WHITE);
         Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int refreshRate = (int) display.getRefreshRate();
         Log.i(TAG,refreshRate +"REFRESHRATE");
@@ -103,6 +90,7 @@ public abstract class GameActivity extends Activity{
 
 
     public void initWithSeed(long randomSeed){
+        Log.i(TAG, "initWithSeed");
         players = new Player[2];//TODO TEMP, have send of num of playas
         players[0] = new Player(0);
         players[1] = new Player(1);
@@ -119,9 +107,8 @@ public abstract class GameActivity extends Activity{
 
     public void onStartGame(){
         Log.i(TAG, "onStartGame called");
-        sendInitMatchData();//For client, nothing, for Server, send match data
         Player.bmp = BitmapFactory.decodeResource(getResources(),R.drawable.smile);
-        final long start = SystemClock.uptimeMillis();
+        gameStarted = true;
         /*Thread t = new Thread(new Runnable() {
 
             @Override
@@ -168,7 +155,6 @@ public abstract class GameActivity extends Activity{
         t.start();*/
 
     }
-    public abstract void sendInitMatchData();
     public abstract void onConnectionComplete();
 
     //TODO Move stuff to networking, Server/Client

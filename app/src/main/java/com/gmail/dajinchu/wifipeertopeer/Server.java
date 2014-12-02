@@ -45,7 +45,6 @@ public class Server extends GameActivity{
         }
     }
 
-    @Override
     public void sendInitMatchData(){
         long seed = System.currentTimeMillis();
         sendSeed(seed);

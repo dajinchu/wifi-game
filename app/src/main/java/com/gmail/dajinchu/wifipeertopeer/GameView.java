@@ -2,9 +2,13 @@ package com.gmail.dajinchu.wifipeertopeer;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -24,13 +28,14 @@ public class GameView extends SurfaceView implements Runnable{
     int screenwidth;
     float density;
 
-    volatile boolean running = false;
+    private volatile boolean running = false;
     SurfaceHolder holder;
     Thread renderThread = null;
 
     //Memory savers
     Canvas canvas;
 
+    int frames=0, frames1 =0;
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
         holder = getHolder();
@@ -42,6 +47,16 @@ public class GameView extends SurfaceView implements Runnable{
         density = dm.density;
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            activity.moveDot((int) event.getX(), (int) event.getY());
+            activity.sendDestination(activity.me.playerNumber, (int) event.getX(), (int) event.getY());
+            //TODO get rid off? sendText(String.valueOf((int) event.getX()) + "x" + String.valueOf((int) event.getY()));
+        }
+        return true;
+    }
+
     public void resume(){
         running = true;
         renderThread  = new Thread(this);
@@ -50,7 +65,7 @@ public class GameView extends SurfaceView implements Runnable{
     }
 
 
-    @Override
+    /*@Override
     public void onDraw(Canvas canvas){
         //long start = System.currentTimeMillis();
         //super.onDraw(canvas);
@@ -62,21 +77,37 @@ public class GameView extends SurfaceView implements Runnable{
         //canvas.drawCircle(100,100,5,mPaint);
         activity.frames++;
         //Log.i("DRAW BENCHMARK", ""+(System.currentTimeMillis() - start));
-    }
+    }*/
 
     @Override
     public void run() {
+        final long start = SystemClock.uptimeMillis();
+        long strt;
         while(running){
-            if(!holder.getSurface().isValid())
-                continue;//Wait for validity
+            try {
+                Thread.sleep(12);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //frames1++;
+            //update();*/
+
+
+            if(!holder.getSurface().isValid()||!activity.gameStarted)
+                continue;//Try again
+            //strt = SystemClock.uptimeMillis();
             canvas = holder.lockCanvas();
+            canvas.drawColor(Color.WHITE);
             if(activity.players!=null) {
                 for (Player player : activity.players) {
                     player.drawShips(canvas);
                 }
             }
+
             holder.unlockCanvasAndPost(canvas);
-            update();
+            //Log.i("GameView", String.valueOf(SystemClock.uptimeMillis()-strt));
+            frames++;
+            Log.w("GameView Benchmark", frames + " " + frames1 + " " + (frames / ((SystemClock.uptimeMillis() - start) / 1000.0)));
         }
     }
 

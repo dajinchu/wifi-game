@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class Ship implements Serializable{
     volatile double x, y;//TODO more volatiles?
-    int xVel=0,yVel=0;
+    double xVel=0,yVel=0;
     boolean arrived = false, wanderArrived = true;//wanderArrived needs to be true when not arrived to trigger finding a new wander when arrived at Player destx
     int wanderdestx, wanderdesty;//Eventually give this back to give player control over individual ships
     //int color;
@@ -17,7 +17,7 @@ public class Ship implements Serializable{
 
     Player my_owner;
     GameActivity activity;
-    private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
+    volatile private double desiredx, desiredy, dist, speed, steeringx,steeringy, steerMagnitude, ratio;
 
     public Ship(int x, int y, Player owner, GameActivity activity){
         this.x = x;
@@ -47,6 +47,7 @@ public class Ship implements Serializable{
             //Closer we get, slower we get, its a proportion
             speed = GameActivity.TERMINAL_VELOCITY * (dist /GameActivity.DEST_RADIUS);
         } else{
+            //Otherwise fast as possible
             speed = GameActivity.TERMINAL_VELOCITY;
         }
 
@@ -66,8 +67,16 @@ public class Ship implements Serializable{
         xVel += steeringx;
         yVel += steeringy;
 
+        speed =Math.sqrt(xVel*xVel+yVel*yVel);
+        if(speed>GameActivity.TERMINAL_VELOCITY){
+            ratio = GameActivity.TERMINAL_VELOCITY/speed;;
+            xVel*=ratio;
+            yVel*=ratio;
+        }
+
         x += xVel;
         y += yVel;
+        //Log.i("SHIP",desiredx+" "+ dist+" "+ speed+ " "+steeringx+" "+steerMagnitude+" "+xVel);
 
     }
 
